@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SmartPaint - Sistem pencampur cat otomatis berbasis pengolahan citra untuk kendaraan otomotif">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/default_logo.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <title>SmartPaint - Pencampur Cat Otomatis</title>
+  <style>
+    main { padding: 72px 0 0; display: block; }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 72px);
+      padding: 60px 48px;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 64px;
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    .hero-text { max-width: 520px; }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-100);
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 24px;
+      letter-spacing: 0.3px;
+    }
+
+    .hero-text h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-text h1 span { color: var(--accent); }
+
+    .hero-text p {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--gray-600);
+      margin-bottom: 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 36px;
+    }
+
+    .hero-image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero-image-wrapper {
+      background: var(--off-white);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      border: 1px solid var(--gray-100);
+    }
+
+    .hero-image img {
+      max-height: 340px;
+      object-fit: contain;
+    }
+
+    .stats-bar {
+      background: var(--off-white);
+      border-top: 1px solid var(--gray-100);
+      padding: 40px 48px;
+    }
+
+    .stats-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .stat-item p {
+      font-size: 0.85rem;
+      color: var(--gray-400);
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 40px 24px; }
+      .hero-inner { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+      .hero-text h1 { font-size: 2.2rem; }
+      .hero-actions { justify-content: center; }
+      .hero-image { order: -1; }
+      .hero-image img { max-height: 220px; }
+      .hero-image-wrapper { padding: 24px; }
+      .stats-inner { grid-template-columns: 1fr; gap: 20px; }
+      .stats-bar { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  {% if session.get('user') %}
+    {% include 'navbar_private.html' %}
+  {% else %}
+    {% include 'navbar_public.html' %}
+  {% endif %}
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <h1>Pencampur Cat <span>Otomatis</span> Berbasis Citra</h1>
+          <p>
+            SmartPaint mengintegrasikan kamera, pengolahan citra, dan kendali otomatis
+            untuk mengambil warna sampel dan memantau volume isi setiap toner warna pada kendaraan otomotif.
+          </p>
+          <div class="hero-actions">
+            <a href="{{ url_for('login') }}" class="btn-primary">Mulai Sekarang</a>
+            <a href="{{ url_for('signup') }}" class="btn-secondary">Buat Akun</a>
+          </div>
+        </div>
+        <div class="hero-image">
+          <div class="hero-image-wrapper">
+            <img src="{{ url_for('static', filename='images/SmartPaint.png') }}" alt="SmartPaint Device">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-bar">
+      <div class="stats-inner">
+        <div class="stat-item">
+          <h3>6</h3>
+          <p>Warna Toner</p>
+        </div>
+        <div class="stat-item">
+          <h3>Real-time</h3>
+          <p>Monitoring Sensor</p>
+        </div>
+        <div class="stat-item">
+          <h3>IoT</h3>
+          <p>MQTT + Firebase</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  {% include 'footer.html' %}
+</body>
+</html>
+

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/default_logo.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <title>Monitoring - SmartPaint</title>
+  <style>
+    main { display:block; padding:90px 18px 60px; background:var(--off-white); min-height:100vh; }
+    .monitoring-container { width:100%; max-width:520px; margin:0 auto; }
+    .monitoring-title { text-align:center; margin-bottom:32px; font-size:1.5rem; font-weight:800; color:var(--navy); }
+    .mon-card { background:var(--white); border:1px solid var(--gray-100); border-radius:var(--radius-lg); padding:24px; margin-bottom:18px; box-shadow:var(--shadow-sm); }
+    .sensor-card { background:var(--gray-50); border-radius:var(--radius-md); padding:18px; border:1px solid var(--gray-100); }
+    .sensor-header { display:flex; justify-content:space-between; align-items:center; }
+    .sensor-label { font-weight:500; color:var(--gray-400); font-size:0.85rem; }
+    .sensor-value { font-size:1rem; font-weight:700; color:var(--navy); }
+    .section-label { margin:0 0 18px; color:var(--gray-400); font-weight:700; font-size:0.75rem; letter-spacing:0.8px; text-transform:uppercase; }
+    .toner-item { margin-bottom:16px; }
+    .toner-item:last-child { margin-bottom:0; }
+    .progress-container { width:100%; height:6px; background:var(--gray-100); border-radius:10px; overflow:hidden; margin-top:8px; }
+    .progress-bar { height:100%; width:0%; transition:width 1s cubic-bezier(0.4,0,0.2,1); background:var(--accent); border-radius:10px; }
+    .status-danger { color:var(--danger) !important; }
+    .status-safe { color:var(--success) !important; }
+    .status-warning { color:var(--warning) !important; }
+    .update-text { text-align:center; font-size:0.75rem; color:var(--gray-400); margin-top:18px; margin-bottom:0; }
+  </style>
+</head>
+<body>
+  {% include 'navbar_private.html' %}
+  <main>
+    <div class="monitoring-container">
+      <h2 class="monitoring-title">Monitoring</h2>
+      <div class="mon-card"><div class="sensor-card"><div class="sensor-header"><span class="sensor-label">Status Wadah Cat</span><span id="kalengStatus" class="sensor-value">-</span></div></div></div>
+      <div class="mon-card">
+        <p class="section-label">Volume Toner</p>
+        <div class="toner-grid">
+          <div class="toner-item"><div class="sensor-header"><span class="sensor-label">RED</span><span id="vol1" class="sensor-value">-</span></div><div class="progress-container"><div id="bar1" class="progress-bar"></div></div></div>
+          <div class="toner-item"><div class="sensor-header"><span class="sensor-label">GREEN</span><span id="vol2" class="sensor-value">-</span></div><div class="progress-container"><div id="bar2" class="progress-bar"></div></div></div>
+          <div class="toner-item"><div class="sensor-header"><span class="sensor-label">BLUE</span><span id="vol3" class="sensor-value">-</span></div><div class="progress-container"><div id="bar3" class="progress-bar"></div></div></div>
+          <div class="toner-item"><div class="sensor-header"><span class="sensor-label">BLACK</span><span id="vol4" class="sensor-value">-</span></div><div class="progress-container"><div id="bar4" class="progress-bar"></div></div></div>
+          <div class="toner-item"><div class="sensor-header"><span class="sensor-label">WHITE</span><span id="vol5" class="sensor-value">-</span></div><div class="progress-container"><div id="bar5" class="progress-bar"></div></div></div>
+          <div class="toner-item"><div class="sensor-header"><span class="sensor-label">YELLOW</span><span id="vol6" class="sensor-value">-</span></div><div class="progress-container"><div id="bar6" class="progress-bar"></div></div></div>
+        </div>
+        <p class="update-text">Last update: <span id="timestamp">-</span></p>
+      </div>
+      <div class="mon-card" style="padding:20px;">
+        <div class="sensor-header" style="margin-bottom:14px;"><span class="sensor-label">Browser</span><span id="koneksiStatus" class="sensor-value status-safe">Online</span></div>
+        <div class="sensor-header"><span class="sensor-label">Database</span><span id="dbStatus" style="font-size:0.9rem;font-weight:700;color:var(--gray-400);">Connecting...</span></div>
+      </div>
+    </div>
+  </main>
+  {% include 'footer.html' %}
+  <script type="module">
+    import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    const fc={apiKey:"AIzaSyDUUYsYskvAeS3yC3Ij5OvjNLqIBxd5Jmc",authDomain:"deteksi-body.firebaseapp.com",databaseURL:"https://deteksi-body-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"deteksi-body"};
+    const app=initializeApp(fc),db=getDatabase(app);
+    const ut=()=>new Date().toLocaleString("id-ID",{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    onValue(ref(db,".info/connected"),(s)=>{const d=document.getElementById("dbStatus");if(s.val()===true){d.textContent="Connected";d.style.color="#27AE60";}else{d.textContent="Disconnected";d.style.color="#E74C3C";}});
+    onValue(ref(db,"Monitoring_Wadah/status"),(s)=>{const v=s.val(),el=document.getElementById("kalengStatus");if(v!==null){el.textContent=v?"Terdeteksi":"Kosong";el.className=v?"sensor-value status-safe":"sensor-value status-danger";}document.getElementById("timestamp").textContent=ut();});
+    const uT=(v,vid,bid)=>{const p=(v!==null)?v:0;const el=document.getElementById(vid),bar=document.getElementById(bid);el.textContent=p+"%";bar.style.width=p+"%";if(p<20){el.className="sensor-value status-danger";bar.style.backgroundColor="#E74C3C";}else if(p<50){el.className="sensor-value status-warning";bar.style.backgroundColor="#F39C12";}else{el.className="sensor-value status-safe";bar.style.backgroundColor="#27AE60";}};
+    ['R','G','B','Bl','W','Y'].forEach((c,i)=>{onValue(ref(db,`Monitoring/${c}`),(s)=>{uT(s.val(),`vol${i+1}`,`bar${i+1}`);document.getElementById("timestamp").textContent=ut();});});
+    window.addEventListener('online',()=>{const s=document.getElementById("koneksiStatus");s.textContent="Online";s.className="sensor-value status-safe";});
+    window.addEventListener('offline',()=>{const s=document.getElementById("koneksiStatus");s.textContent="Offline";s.className="sensor-value status-danger";});
+  </script>
+</body>
+</html>
